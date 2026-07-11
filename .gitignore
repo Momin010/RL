@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Build outputs
+*.o
+*.out
+build/
+*.hex
+*.elf
+
+# Editor / OS
+.DS_Store
+.vscode/
+.idea/
+
+# Note: artifacts/model.npz and artifacts/metrics.json ARE committed on purpose
+# — they are the trained deliverable and the reproducible metrics.
