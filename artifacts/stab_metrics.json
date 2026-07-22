@@ -1,0 +1,67 @@
+{
+  "arch": [
+    9,
+    20,
+    16,
+    2
+  ],
+  "n_params": 570,
+  "val_mse": 0.02360941955690575,
+  "rl_reward": -1.6089290876497653,
+  "baseline_no_control": {
+    "median_max_tilt_deg": 21.71537754944145,
+    "mean_rms_tilt_deg": 8.144606797515236,
+    "loss_of_control_pct": 28.333333333333332,
+    "n": 120
+  },
+  "trained": {
+    "median_max_tilt_deg": 3.0555263361954745,
+    "mean_rms_tilt_deg": 1.1018352459415641,
+    "loss_of_control_pct": 0.0,
+    "n": 120
+  },
+  "expert": {
+    "median_max_tilt_deg": 3.0555263361954745,
+    "mean_rms_tilt_deg": 1.1749373699838894,
+    "loss_of_control_pct": 0.0,
+    "n": 120
+  },
+  "per_motor": {
+    "AeroTech_F12J": {
+      "median_max_tilt_deg": 3.247690224227018,
+      "mean_rms_tilt_deg": 1.0270893976497626,
+      "loss_of_control_pct": 0.0,
+      "n": 40
+    },
+    "AeroTech_F24W": {
+      "median_max_tilt_deg": 2.839394319808064,
+      "mean_rms_tilt_deg": 1.0943705908347034,
+      "loss_of_control_pct": 0.0,
+      "n": 40
+    },
+    "AeroTech_F44W": {
+      "median_max_tilt_deg": 2.836243679359606,
+      "mean_rms_tilt_deg": 1.1710636111830692,
+      "loss_of_control_pct": 0.0,
+      "n": 40
+    },
+    "Cesaroni_53F70": {
+      "median_max_tilt_deg": 2.8367181469080434,
+      "mean_rms_tilt_deg": 1.5968535138496007,
+      "loss_of_control_pct": 5.0,
+      "n": 40
+    },
+    "Estes_F15": {
+      "median_max_tilt_deg": 2.7142677024336974,
+      "mean_rms_tilt_deg": 0.9681792331254326,
+      "loss_of_control_pct": 0.0,
+      "n": 40
+    },
+    "Quest_F41W": {
+      "median_max_tilt_deg": 2.76477317457731,
+      "mean_rms_tilt_deg": 1.0964367824485115,
+      "loss_of_control_pct": 0.0,
+      "n": 40
+    }
+  }
+}
