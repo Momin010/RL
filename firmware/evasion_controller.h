@@ -47,9 +47,12 @@ static inline void evasion_init(EvasionState* s) {
     s->initialized = 0;
 }
 
+#ifndef RNN_CLAMPF_DEFINED
+#define RNN_CLAMPF_DEFINED
 static inline float rnn_clampf(float v, float lo, float hi) {
     return v < lo ? lo : (v > hi ? hi : v);
 }
+#endif
 
 // One control step.
 //   range_m       : slant range to the tracked object (m)

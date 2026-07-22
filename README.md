@@ -1,4 +1,46 @@
-# Rocket Evasion Neural Network — Teensy 4.1
+# Rocket Stabilization + Evasion Neural Networks — Teensy 4.1
+
+Two trained networks, one firmware image:
+
+1. **Stabilization net** (`scripts/train_stab.py`) — the always-on inner loop.
+   Reads tilt + body rates from your IMU and drives the fin servos to keep the
+   rocket vertical against wind. Trained on **real F-class motor thrust
+   curves** pulled from thrustcurve.org certification data (six motors, from
+   the 3.45 s Estes F15 to the 0.8 s Cesaroni F70), through a
+   harness-data → train → validate → DAgger → **RL fine-tune** cycle.
+2. **Evasion net** (`scripts/train.py`) — classifies an incoming object and
+   commands an evasive fin blend on top of stabilization (details below).
+
+## Stabilization results (`artifacts/stab_metrics.json`)
+
+Closed-loop over 120 held-out randomised flights (6 real motors, steady wind
+up to 6 m/s per axis + gusts, sensor noise, servo rate limits, 10 ms latency):
+
+| Controller | Median max tilt | Mean RMS tilt | Loss of control |
+|---|---:|---:|---:|
+| Fins locked (no control) | ~23° | ~9° | ~20% of flights |
+| **Trained net (100 Hz)** | **~3°** | **~1.3°** | **0%** |
+| Gain-scheduled PD expert (true state) | ~3° | ~1.3° | 0% |
+
+The net matches its teacher while running from *noisy* sensor features only —
+and it costs a few microseconds per tick on the Teensy's FPU, so your 100 Hz
+(10 ms) loop budget is >99% free for sensing.
+
+Stabilization quickstart:
+
+```bash
+python3 scripts/train_stab.py      # harness data -> BC -> DAgger -> RL (~min)
+python3 scripts/export_stab_c.py   # -> firmware/stab_model_weights.h
+g++ -O2 -std=c++14 -I firmware firmware/host_stab_parity_test.cpp -o parity_stab && ./parity_stab
+```
+
+Then in `firmware/rocket_evasion.ino` fill in `read_attitude()` (INTEGRATION
+POINT 2) with your IMU/attitude-filter output — the trained net now *is* the
+`existing_control_loop()`.
+
+---
+
+# Part 2: the evasion network
 
 An end-to-end TinyML pipeline for an on-board **evasion controller**: sense an
 incoming object, recognise *what it is*, and command fin deflections to
@@ -118,13 +160,20 @@ EvasionOutput e = evasion_step(&state,
 ```
 rocketnn/            The library (pure NumPy)
   nn.py                From-scratch MLP: forward, backprop, Adam, save/load
+  motors.py            REAL F-class thrust curves (thrustcurve.org cert data)
+  stab_sim.py          Wind/attitude flight sim + gain-scheduled PD expert
   simulator.py         3D engagement sim, threat models, sensor, expert evader
   data.py              Turns expert engagements into a supervised dataset
 scripts/
-  train.py             Train + evaluate (held-out + closed-loop), save artifacts
+  train_stab.py        Stabilization: harness -> BC -> DAgger -> RL fine-tune
+  export_stab_c.py     stab_model.npz -> firmware/stab_model_weights.h
+  train.py             Evasion: train + evaluate, save artifacts
   export_c.py          model.npz -> firmware/model_weights.h + parity_vectors.h
 firmware/
   nn_inference.h       Dependency-free C++ forward pass (the deploy target)
+  stabilization_controller.h  IMU features -> fin commands (trained stab net)
+  stab_model_weights.h GENERATED: stabilization net weights
+  host_stab_parity_test.cpp   Proves stab C++ == Python (run on host)
   evasion_controller.h Sensor stream -> fin commands + classification + gate
   model_weights.h      GENERATED: architecture, normalisation, weights
   parity_vectors.h     GENERATED: fixtures for the parity test

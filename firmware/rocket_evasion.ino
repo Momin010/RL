@@ -23,6 +23,7 @@
 
 #include <Servo.h>
 #include "evasion_controller.h"
+#include "stabilization_controller.h"
 
 // ---- Configuration ---------------------------------------------------------
 static const int   PIN_FIN_PITCH = 2;      // servo controlling the pitch plane
@@ -93,18 +94,63 @@ ThreatReading read_threat_sensor() {
 }
 
 // ===========================================================================
-//  INTEGRATION POINT 2 — your existing stabilization / servo loop
-//  Return whatever fin deflections your current controller wants, each in
-//  [-1, 1]. These are what fly when there is no threat; the evasion command is
-//  blended on top when a threat appears.
+//  INTEGRATION POINT 2 — attitude sensing for the stabilization network
+//  The stabilization loop is now flown by the trained network in
+//  stabilization_controller.h (see scripts/train_stab.py — trained on real
+//  F-class thrust curves). Feed it your filtered IMU attitude here:
+//  tilt of the body axis from vertical in each control plane (rad) and the
+//  matching body rates (rad/s), plus an airspeed estimate.
 // ===========================================================================
+struct AttitudeReading {
+    bool  valid;          // false until your attitude filter has converged
+    float tilt_pitch_rad; // tilt from vertical, pitch-servo plane
+    float rate_pitch_rps; // gyro rate, same plane
+    float tilt_yaw_rad;   // tilt from vertical, yaw-servo plane
+    float rate_yaw_rps;   // gyro rate, same plane
+    float airspeed_mps;   // pitot / baro-derived / integrated-accel estimate
+};
+
+AttitudeReading read_attitude() {
+    AttitudeReading a;
+    a.valid = false;      // <-- set true once your Madgwick/Kalman filter runs
+    a.tilt_pitch_rad = 0.0f;
+    a.rate_pitch_rps = 0.0f;
+    a.tilt_yaw_rad = 0.0f;
+    a.rate_yaw_rps = 0.0f;
+    a.airspeed_mps = 0.0f;
+    // e.g. a = imu_attitude();  a.airspeed_mps = baro_vertical_speed();
+    return a;
+}
+
+// Burn time (s) of the motor you fly — used only as a phase feature. Values
+// for the six motors the net was trained on are in rocketnn/motors.py
+// (e.g. Estes F15: 3.45, AeroTech F24W: 2.13, Cesaroni 53F70: 0.816).
+static const float MOTOR_BURN_TIME_S = 3.45f;
+StabState stab;
+static const float STAB_HZ = 100.0f;       // net was trained at 100 Hz
+static float t_ignition = -1.0f;           // set when launch is detected
+elapsedMicros stabTimer;
+
 struct FinCommand { float pitch; float yaw; };
+static FinCommand stab_last = {0.0f, 0.0f};
 
 FinCommand existing_control_loop() {
-    FinCommand c;
-    c.pitch = 0.0f;   // <-- your PID / attitude controller output here
-    c.yaw   = 0.0f;
-    return c;
+    // Runs the trained stabilization network at 100 Hz (its training rate);
+    // between ticks the last command is held.
+    AttitudeReading a = read_attitude();
+    if (a.valid && stabTimer >= (unsigned long)(1e6f / STAB_HZ)) {
+        stabTimer = 0;
+        float t_since = (t_ignition >= 0.0f)
+                            ? (millis() / 1000.0f - t_ignition)
+                            : MOTOR_BURN_TIME_S;  // burn_frac=1 pre-launch
+        StabOutput s = stab_step(&stab,
+                                 a.tilt_pitch_rad, a.rate_pitch_rps,
+                                 a.tilt_yaw_rad, a.rate_yaw_rps,
+                                 a.airspeed_mps, t_since);
+        stab_last.pitch = s.fin_pitch;
+        stab_last.yaw = s.fin_yaw;
+    }
+    return stab_last;
 }
 
 // ---------------------------------------------------------------------------
