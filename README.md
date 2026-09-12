@@ -119,8 +119,16 @@ python3 scripts/export_c.py    # -> firmware/model_weights.h + parity_vectors.h
 g++ -O2 -std=c++14 -I firmware firmware/host_parity_test.cpp -o /tmp/parity && /tmp/parity
 ```
 
-Then open `firmware/rocket_evasion.ino` in the Arduino IDE / PlatformIO, select
-Teensy 4.1, and flash.
+Then flash the sketch for your board with Arduino IDE / PlatformIO:
+
+- **Teensy 4.1**: `firmware/rocket_evasion.ino`
+- **ESP32 / ESP32-S2 / ESP32-S3**: `firmware/rocket_esp32.ino` (Arduino core
+  3.x; servos are driven by the LEDC peripheral, no Servo library needed).
+  Note the S2 has no hardware FPU - inference is software-float but still fits
+  a 100 Hz loop easily; the plain ESP32 and S3 have a single-precision FPU.
+
+The exported weight headers are plain portable C - the SAME files work on both
+boards, so the parity test covers both.
 
 Requirements: Python 3 + NumPy, and any C++ compiler for the parity check.
 
@@ -179,6 +187,7 @@ firmware/
   parity_vectors.h     GENERATED: fixtures for the parity test
   host_parity_test.cpp Proves C++ == Python (run on host)
   rocket_evasion.ino   Teensy 4.1 flight sketch (your integration points)
+  rocket_esp32.ino     ESP32 / ESP32-S2 / ESP32-S3 flight sketch (same brain)
 artifacts/             Trained model.npz + metrics.json (committed)
 docs/DESIGN.md         Architecture, feature contract, latency, safety, limits
 tools/run_all.sh       One-shot train -> export -> verify
