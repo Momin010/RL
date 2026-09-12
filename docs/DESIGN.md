@@ -25,7 +25,7 @@ input 10  ──▶  Dense 24 + ReLU  ──▶  Dense 16 + ReLU  ──▶  Den
 ```
 
 - **766 parameters**, ~3 KB as float32.
-- ReLU hidden activations (a single `max(0,x)` on the MCU — no `exp`/`tanh`
+- ReLU hidden activations (a single `max(0,x)` on the MCU - no `exp`/`tanh`
   tables in the hot path).
 - One shared trunk with a combined output head:
   - outputs `[0], [1]` = pitch / yaw fin commands (regression, clamped to
@@ -50,14 +50,14 @@ input vector, its order, and its units. This is the contract:
 | 5 | elevation rate   | rad/s | finite-differenced in `evasion_step`          |
 | 6 | time-to-go       | s     | `range / max(closing, 1)`, computed for you   |
 | 7 | own speed        | m/s   | IMU / pitot / baro                            |
-| 8 | last fin pitch   | —     | carried by `EvasionState` (proprioception)    |
-| 9 | last fin yaw     | —     | carried by `EvasionState`                     |
+| 8 | last fin pitch   | -     | carried by `EvasionState` (proprioception)    |
+| 9 | last fin yaw     | -     | carried by `EvasionState`                     |
 
 Defined once in `rocketnn/simulator.py::FEATURE_NAMES`, assembled identically in
 `firmware/evasion_controller.h::evasion_step`. Inputs are standardised
 (`(x - mean) / std`) using statistics baked into `model_weights.h`, so the
 device and host normalise identically. **If you add/reorder a feature, retrain
-and re-export — never hand-edit the header.**
+and re-export - never hand-edit the header.**
 
 ## 4. Latency budget
 
@@ -74,7 +74,7 @@ Consequences:
   the network does not meaningfully add to it.
 
 Determinism: no dynamic allocation, no data-dependent branching beyond ReLU, no
-blocking calls — the pass takes the same time every loop.
+blocking calls - the pass takes the same time every loop.
 
 ## 5. Simulator and expert (what the network learned from)
 
@@ -88,14 +88,14 @@ blocking calls — the pass takes the same time every loop.
   ballistic/guided threats are set up to score a near-hit, which is what makes
   "miss distance" a meaningful score.
 - **Sensor model** adds range/angle/closing noise and finite-differences the
-  line-of-sight rates — the same computation the firmware does — so the network
+  line-of-sight rates - the same computation the firmware does - so the network
   trains on the noise characteristics it will actually see.
-- **Expert law:** zero-effort-miss avoidance — estimate the perpendicular offset
+- **Expert law:** zero-effort-miss avoidance - estimate the perpendicular offset
   at closest approach and accelerate to grow it, with urgency ramped by
   time-to-go, falling back to a fixed break direction on a perfectly symmetric
   collision.
 
-## 6. Safety notes — read before flying
+## 6. Safety notes - read before flying
 
 This is a research/education controller trained in simulation. Treat it
 accordingly:
@@ -106,7 +106,7 @@ accordingly:
 - **It is not a safety system of record.** Keep independent hardware failsafes:
   the sketch centres the fins whenever disarmed (`PIN_ARM`), and the controller
   gate holds fire on non-threats. Do not remove these.
-- **Bench-test the full path first** — feed recorded/synthetic tracks through
+- **Bench-test the full path first** - feed recorded/synthetic tracks through
   `read_threat_sensor()` and watch the servo commands before any powered
   flight.
 - **Actuator limits.** The command is a normalised deflection; make sure
@@ -121,7 +121,7 @@ accordingly:
   discrimination and enable learned weave patterns; it also ports cleanly to C.
 - **Imitation ceiling.** The net cannot beat its teacher. Fine-tuning the policy
   with RL (e.g. policy-gradient on miss distance) in the same simulator would
-  let it exceed the expert — the simulator and closed-loop scorer needed for
+  let it exceed the expert - the simulator and closed-loop scorer needed for
   that already live in `rocketnn/simulator.py`.
 - **float32, not int8.** float32 is the right call on the M7's FPU (accuracy +
   simplicity, still microseconds). int8 quantisation would shrink flash further

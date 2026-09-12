@@ -4,7 +4,7 @@ Every curve below is certified test-stand data (NAR/TRA/CAR certification
 firings) downloaded from the thrustcurve.org public API
 (https://www.thrustcurve.org/api/v1/download.json) on 2026-07-22. The six
 motors were chosen to span the F class: from the long, gentle 3.45 s burn of
-the Estes F15 to the violent 0.8 s kick of the Cesaroni F70 — so a controller
+the Estes F15 to the violent 0.8 s kick of the Cesaroni F70 - so a controller
 trained across them has seen both ends of the dynamic-pressure envelope your
 airframe can encounter on an F motor.
 

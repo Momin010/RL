@@ -11,7 +11,7 @@
 //   * an optional safety gate so the vehicle only throws a maneuver for a
 //     genuine, closing threat.
 //
-// Pure C, no Arduino dependencies, no dynamic memory — so it drops into any
+// Pure C, no Arduino dependencies, no dynamic memory - so it drops into any
 // loop and also compiles on a desktop for testing.
 #ifndef ROCKET_EVASION_CONTROLLER_H
 #define ROCKET_EVASION_CONTROLLER_H

@@ -11,7 +11,7 @@ maximise the miss distance.
 Nothing here runs on the Teensy. This module exists only to manufacture
 training data and to score a trained policy in closed loop. It is deliberately
 a *kinematic* model (point masses, achievable-lateral-accel steering) rather
-than a full six-degree-of-freedom aero model — that is the right altitude for
+than a full six-degree-of-freedom aero model - that is the right altitude for
 learning an evasion *policy*, and it keeps the expert labels clean.
 
 Threat classes
@@ -50,7 +50,7 @@ CLASS_NAMES = ["none", "ballistic", "guided", "debris"]
 N_CLASSES = 4
 
 # Sensor noise (1-sigma). Rates are finite-differenced from noisy angles, so
-# they end up considerably noisier than the raw angles — the network has to
+# they end up considerably noisier than the raw angles - the network has to
 # learn to cope, which is realistic.
 NOISE_RANGE_FRAC = 0.02        # 2% of range
 NOISE_ANGLE = np.radians(0.6)  # bearing/elevation

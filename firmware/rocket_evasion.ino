@@ -1,5 +1,5 @@
 // ============================================================================
-//  Rocket evasion controller — Teensy 4.1 flight sketch
+//  Rocket evasion controller - Teensy 4.1 flight sketch
 // ============================================================================
 //
 //  Pipeline per loop:
@@ -9,13 +9,13 @@
 //
 //  The neural network was trained offline (see the repo README) and baked into
 //  model_weights.h. Inference here is a fixed ~sub-microsecond forward pass on
-//  the M7's FPU — the DWT cycle counter below prints the real number so you can
+//  the M7's FPU - the DWT cycle counter below prints the real number so you can
 //  see the latency budget for yourself.
 //
 //  THIS SKETCH IS A HARNESS. Two things are yours to wire up, both clearly
 //  marked "INTEGRATION POINT" below:
-//     1. read_threat_sensor()  — feed in your radar / ToF / optical tracker
-//     2. existing_control_loop() — your current stabilization + servo commands
+//     1. read_threat_sensor()  - feed in your radar / ToF / optical tracker
+//     2. existing_control_loop() - your current stabilization + servo commands
 //
 //  Everything between them (feature assembly, inference, classification, the
 //  safety gate) is done for you by evasion_controller.h.
@@ -76,7 +76,7 @@ static inline uint32_t cycles_now() {
 }
 
 // ===========================================================================
-//  INTEGRATION POINT 1 — your threat sensor
+//  INTEGRATION POINT 1 - your threat sensor
 //  Replace the body with a real read from your radar / lidar / ToF / optical
 //  tracker. Return valid=false when nothing is being tracked. The controller
 //  computes line-of-sight rates for you, so raw range + angles are enough.
@@ -94,9 +94,9 @@ ThreatReading read_threat_sensor() {
 }
 
 // ===========================================================================
-//  INTEGRATION POINT 2 — attitude sensing for the stabilization network
+//  INTEGRATION POINT 2 - attitude sensing for the stabilization network
 //  The stabilization loop is now flown by the trained network in
-//  stabilization_controller.h (see scripts/train_stab.py — trained on real
+//  stabilization_controller.h (see scripts/train_stab.py - trained on real
 //  F-class thrust curves). Feed it your filtered IMU attitude here:
 //  tilt of the body axis from vertical in each control plane (rad) and the
 //  matching body rates (rad/s), plus an airspeed estimate.
@@ -122,7 +122,7 @@ AttitudeReading read_attitude() {
     return a;
 }
 
-// Burn time (s) of the motor you fly — used only as a phase feature. Values
+// Burn time (s) of the motor you fly - used only as a phase feature. Values
 // for the six motors the net was trained on are in rocketnn/motors.py
 // (e.g. Estes F15: 3.45, AeroTech F24W: 2.13, Cesaroni 53F70: 0.816).
 static const float MOTOR_BURN_TIME_S = 3.45f;

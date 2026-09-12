@@ -3,15 +3,15 @@
 
 The training cycle (exactly the harness->train->validate->RL loop):
 
-  1. HARNESS DATA — fly the gain-scheduled expert through hundreds of
+  1. HARNESS DATA - fly the gain-scheduled expert through hundreds of
      randomised flights on real F-motor thrust curves and log
      (noisy features -> expert command) pairs.
-  2. TRAIN — behaviour-clone an MLP on that dataset (Adam, MSE).
-  3. VALIDATE — held-out MSE plus true closed-loop flights.
-  4. DAgger CYCLE — fly the *student*, let the expert relabel every state the
+  2. TRAIN - behaviour-clone an MLP on that dataset (Adam, MSE).
+  3. VALIDATE - held-out MSE plus true closed-loop flights.
+  4. DAgger CYCLE - fly the *student*, let the expert relabel every state the
      student actually visits, aggregate, retrain. This kills the compounding-
      error problem of naive cloning.
-  5. RL FINE-TUNE — cross-entropy-method search on the network weights,
+  5. RL FINE-TUNE - cross-entropy-method search on the network weights,
      maximising a flight reward (small tilt, no loss of control, low servo
      effort) over a fixed batch of flights. This lets the policy beat the
      teacher where the teacher's linear PD is suboptimal.

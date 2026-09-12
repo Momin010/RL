@@ -3,7 +3,7 @@
 // This is a straight, allocation-free forward pass over the weights in
 // model_weights.h. It uses only float32 (the Cortex-M7 has a hardware FPU),
 // needs no libc math functions in the hot path, and touches no dynamic memory,
-// so its timing is deterministic — exactly what a hard real-time control loop
+// so its timing is deterministic - exactly what a hard real-time control loop
 // wants. The arithmetic mirrors rocketnn/nn.py bit-for-bit closely enough that
 // the host parity test agrees to < 1e-3 (see host_parity_test.cpp).
 //

@@ -2,8 +2,8 @@
 
 This models exactly the problem your Teensy + servos have to solve: the rocket
 leaves the rail, wind pushes it sideways, and two orthogonal fin pairs (pitch
-plane and yaw plane) must keep the tilt near zero. The longitudinal flight —
-speed, altitude, dynamic pressure — comes from integrating a *real* thrust
+plane and yaw plane) must keep the tilt near zero. The longitudinal flight -
+speed, altitude, dynamic pressure - comes from integrating a *real* thrust
 curve (rocketnn/motors.py, thrustcurve.org certification data), because fin
 authority scales with dynamic pressure and a controller trained on a fake
 thrust profile learns the wrong gain schedule.
@@ -13,7 +13,7 @@ Physics (per lateral axis, pitch and yaw treated symmetrically):
     I * theta_ddot = M_static + M_damp + M_fin
 
   M_static : restoring/upsetting moment from angle of attack. The angle of
-             attack is tilt plus the wind-induced component atan(w / v) — this
+             attack is tilt plus the wind-induced component atan(w / v) - this
              is HOW wind knocks a rocket over, and why the problem gets easy as
              the rocket speeds up.
   M_damp   : aerodynamic pitch damping.
@@ -94,10 +94,10 @@ def make_features(tilt_meas, rate_meas, v_air, q_dyn, fin_prev, burn_frac):
 
 
 def expert_action(tilt, rate, q_dyn):
-    """Gain-scheduled PD teacher (uses TRUE state — a luxury the net won't get).
+    """Gain-scheduled PD teacher (uses TRUE state - a luxury the net won't get).
 
     Fin torque scales with q, so the loop gain is kept constant by scheduling
-    the PD gains with 1/q. Near the rail (tiny q) commands saturate — that is
+    the PD gains with 1/q. Near the rail (tiny q) commands saturate - that is
     physically correct: there is simply little authority at low speed.
     """
     q_eff = max(q_dyn, 40.0)
@@ -219,7 +219,7 @@ def fly(flight, policy, rng=None, record=False):
 
 
 def policy_zero(x):
-    """Fins locked at neutral — the 'no active stabilization' baseline."""
+    """Fins locked at neutral - the 'no active stabilization' baseline."""
     return np.zeros(2)
 
 

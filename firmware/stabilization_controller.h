@@ -2,14 +2,14 @@
 //
 // Wraps the trained stabilization network (stab_model_weights.h) behind one
 // call per control tick. Feature assembly here MUST mirror
-// rocketnn/stab_sim.py::make_features — the parity test checks the raw
+// rocketnn/stab_sim.py::make_features - the parity test checks the raw
 // network; this file is the contract for what you feed it.
 //
 //   inputs : tilt + tilt rate per axis (from your IMU / attitude filter),
 //            airspeed estimate, and time since ignition
 //   output : fin_pitch / fin_yaw commands in [-1, 1]
 //
-// Portable C/C++ — also compiles on a desktop for the parity test.
+// Portable C/C++ - also compiles on a desktop for the parity test.
 #ifndef ROCKET_STABILIZATION_CONTROLLER_H
 #define ROCKET_STABILIZATION_CONTROLLER_H
 
@@ -80,7 +80,7 @@ static inline StabOutput stab_step(StabState* s,
         burn_frac = t_since_ignition_s / s->burn_time_s;
     }
 
-    // Mirror of rocketnn/stab_sim.py::make_features — keep in lockstep.
+    // Mirror of rocketnn/stab_sim.py::make_features - keep in lockstep.
     float x[SNN_NUM_FEATURES];
     x[0] = tilt_pitch;
     x[1] = rate_pitch;

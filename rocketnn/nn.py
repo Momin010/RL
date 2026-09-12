@@ -8,7 +8,7 @@ the two produce identical numbers. Owning the math on both sides is what makes
 that guarantee possible.
 
 Architecture: fully-connected layers with ReLU on the hidden layers and a
-linear output layer. ReLU is chosen on purpose — it is a single `max(0, x)` on
+linear output layer. ReLU is chosen on purpose - it is a single `max(0, x)` on
 the microcontroller, with no `exp`/`tanh` table lookups in the hot path.
 """
 

@@ -17,4 +17,4 @@ build/
 .idea/
 
 # Note: artifacts/model.npz and artifacts/metrics.json ARE committed on purpose
-# — they are the trained deliverable and the reproducible metrics.
+# - they are the trained deliverable and the reproducible metrics.
